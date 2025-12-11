@@ -1,0 +1,542 @@
+/* Globális beállítások */
+:root {
+    --primary-color: #004e92;
+    --secondary-color: #000428;
+    --accent-color: #00b4d8;
+    --text-color: #333;
+    --text-light: #666;
+    --background-light: #f8f9fa;
+    --card-bg: #ffffff;
+    --shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    --transition-speed: 0.3s;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+    color: var(--text-color);
+    background-color: #fff;
+    overflow-x: hidden;
+}
+
+/* --- NAVIGÁCIÓ --- */
+.main-header {
+    background-color: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    height: 70px;
+}
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    height: 100%;
+}
+
+.logo {
+  /* ... Eredeti .logo konténer stílusok (pl. display: flex; text-align: center; margin, padding) ... */
+  height: 40px; /* Példa magasság beállítása */
+  width: auto; /* Példa */
+}
+
+/* Az img elemre vonatkozó stílusok */
+.logo img {
+  height: 100%; /* Hogy kitöltse a konténer magasságát */
+  width: auto;
+  /* ... Eredeti betűtípus, betűméret, szín (ha a szöveges logóra vonatkoztak)
+     Ezek már nem feltétlenül érvényesek, mivel a kép maga a grafika. */
+  display: block; /* Hogy elkerüljük az esetleges extra margint */
+}
+
+.highlight {
+    color: var(--accent-color);
+}
+
+.nav-links {
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 30px;
+}
+
+.nav-links li a {
+    text-decoration: none;
+    color: var(--text-color);
+    font-weight: 500;
+    font-size: 0.95rem;
+    position: relative;
+    transition: color var(--transition-speed);
+}
+
+.nav-links li a::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 2px;
+    bottom: -5px;
+    left: 0;
+    background-color: var(--accent-color);
+    transition: width var(--transition-speed);
+}
+
+.nav-links li a:hover::after {
+    width: 100%;
+}
+
+.nav-links li a:hover {
+    color: var(--primary-color);
+}
+
+.mobile-cta {
+    display: none;
+}
+
+/* HAMBURGER MENU STÍLUSOK */
+.hamburger {
+    display: none;
+    cursor: pointer;
+    width: 30px;
+    height: 20px;
+    position: relative;
+    z-index: 1100;
+}
+
+.bar {
+    display: block;
+    width: 100%;
+    height: 3px;
+    margin-bottom: 5px;
+    background-color: var(--secondary-color);
+    border-radius: 3px;
+    transition: all 0.3s ease-in-out;
+}
+
+/* Hamburger Animáció (X alak) */
+.hamburger.active .bar:nth-child(1) {
+    transform: translateY(8px) rotate(45deg);
+}
+.hamburger.active .bar:nth-child(2) {
+    opacity: 0;
+}
+.hamburger.active .bar:nth-child(3) {
+    transform: translateY(-8px) rotate(-45deg);
+}
+
+/* --- BANNER KARUSSZEL --- */
+.banner-carousel {
+    position: relative;
+    width: 100%;
+    height: 80vh; /* Kicsit magasabb, modern hatás */
+    min-height: 600px;
+    max-height: 900px;
+    overflow: hidden;
+    /* Háttér a banner "mögött/mellett", ha széles a képernyő */
+    background: radial-gradient(circle at center, #24add6 0%, #ffffff 100%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.banner-slide {
+    position: absolute;
+    /* MÉRETEZÉS ÉS POZICIONÁLÁS - A LÉNYEG */
+    width: 95%; /* Mobilon legyen kis margó */
+    max-width: 1600px; /* Itt állítjuk meg a növekedést! */
+    height: 90%; /* Függőlegesen is hagyunk kis helyet (lebegő hatás) */
+    
+    left: 50%; /* Középre igazítás trükk */
+    top: 50%;
+    transform: translate(-50%, -50%); /* Tökéletes középre húzás */
+    
+    /* DIZÁJN */
+    background-size: cover;
+    background-position: center center;
+    border-radius: 30px; /* Lekerekített sarkok a modern hatáshoz */
+    box-shadow: 0 20px 50px rgba(0,0,0, 0.8); /* Erős árnyék a kiemeléshez */
+    overflow: hidden; /* Hogy a gyerek elemek ne lógjanak ki a lekerekítésből */
+    
+    /* FLEXBOX A TARTALOMHOZ */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    text-align: center;
+    padding: 0 40px;
+    
+    /* ANIMÁCIÓK */
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.8s ease-in-out, visibility 0.8s;
+}
+
+/* Ha a képernyő kicsi (mobil), vegyük el a lebegést, hogy kihasználjuk a helyet */
+@media (max-width: 768px) {
+    .banner-slide {
+        width: 100%;
+        height: 100%;
+        border-radius: 0;
+        max-width: none;
+    }
+    .banner-carousel {
+        height: 60vh; /* Mobilon alacsonyabb */
+    }
+}
+
+.banner-slide.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Sötétítő réteg a képre, hogy a szöveg olvasható legyen */
+.banner-slide::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.8), rgba(0,0,0,0.2), rgba(0,0,0,0.4)); 
+    z-index: 1;
+}
+
+.banner-content {
+    z-index: 2;
+    transform: translateY(40px) scale(0.95); /* Kicsit kisebb és lejjebb indul */
+    transition: transform 1s cubic-bezier(0.25, 1, 0.5, 1); /* Rugalmasabb animáció */
+    max-width: 900px; 
+    width: 100%;
+}
+
+.banner-slide.active .banner-content {
+    transform: translateY(0) scale(1);
+}
+
+.banner-slide h2 {
+    font-family: 'Montserrat', sans-serif; /* Javasolt font */
+    font-size: clamp(2rem, 4vw, 4.5rem); 
+    font-weight: 800;
+    line-height: 1.1;
+    margin-bottom: 20px;
+    letter-spacing: -1px;
+    text-shadow: 0 10px 30px rgba(0,0,0,0.6);
+}
+
+.banner-slide p {
+    font-family: 'Open Sans', sans-serif;
+    font-size: clamp(1rem, 1.5vw, 1.3rem);
+    margin-bottom: 40px;
+    color: rgba(255, 255, 255, 0.9);
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.6;
+}
+
+/* Gomb stílus */
+.cta-button {
+    display: inline-block;
+    padding: 16px 45px;
+    background: rgba(255, 255, 255, 0.1); /* Üveg hatás (Glassmorphism) */
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255,255,255,0.5);
+    color: white;
+    text-decoration: none;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 0.9rem;
+    border-radius: 50px;
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+.cta-button:hover {
+    background: var(--accent-color);
+    border-color: var(--accent-color);
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(0, 180, 216, 0.4);
+}
+
+/* Navigációs pöttyök */
+.carousel-indicators {
+    position: absolute;
+    bottom: 40px; /* Feljebb hoztuk, hogy a kártyán belül legyen */
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 3;
+    display: flex;
+    gap: 15px;
+}
+
+.dot {
+    height: 4px; /* Vonal stílus modernebb mint a pötty */
+    width: 30px;
+    background-color: rgba(255, 255, 255, 0.3);
+    border-radius: 2px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.dot.active {
+    background-color: var(--accent-color);
+    width: 50px; /* Az aktív szélesebb */
+    box-shadow: 0 0 10px var(--accent-color);
+}
+
+/* --- TERMÉK SZEKCIÓK (RIVER) --- */
+.product-sections {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.product-river-container {
+    position: relative;
+    padding: 80px 0;
+}
+
+.product-river {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    width: 2px;
+    background: #e0e0e0;
+    transform: translateX(-50%);
+    z-index: 1;
+}
+
+/* Ez a színes csík, ami követi a görgetést (JS állítja a háttér méretét) */
+.product-river {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    width: 2px; 
+    /* A backgroundot a JS fogja felülírni a lineáris gradienst használva a kitöltésre */
+    background: #e0e0e0;
+    transform: translateX(-50%);
+    z-index: 1;
+}
+
+
+/* KÁRTYA STÍLUSOK (SCROLL REVEAL) */
+.product-row {
+    display: flex;
+    margin: 60px 0;
+    z-index: 2;
+    position: relative;
+}
+
+.product-card {
+    background-color: var(--card-bg);
+    border-radius: 15px;
+    box-shadow: var(--shadow);
+    max-width: 500px;
+    width: 100%;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    /* Alapállapot az animációhoz: elrejtve és lejjebb tolva (Reveal effect) */
+    opacity: 0;
+    transform: translateY(60px) scale(0.95);
+    transition: all 0.8s cubic-bezier(0.25, 1, 0.5, 1); 
+}
+
+/* Ez az osztály aktiválja a megjelenést (JS teszi rá) */
+.product-card.is-visible {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+}
+
+.product-card:hover {
+    transform: translateY(-10px) scale(1.02);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+}
+
+.card-image {
+    width: 100%;
+    height: 250px;
+    overflow: hidden;
+}
+
+.card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s;
+}
+
+.product-card:hover .card-image img {
+    transform: scale(1.1);
+}
+
+.card-content {
+    padding: 30px;
+    text-align: left;
+}
+
+.card-content h3 {
+    color: var(--primary-color);
+    font-size: 1.5em;
+    margin-bottom: 10px;
+}
+
+.card-content p {
+    color: var(--text-light);
+    margin-bottom: 20px;
+    font-size: 0.95em;
+}
+
+.learn-more {
+    color: var(--accent-color);
+    text-decoration: none;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: gap 0.3s;
+}
+
+.learn-more:hover {
+    gap: 12px;
+}
+
+/* Elrendezés: Balra-jobbra váltás */
+.left-align {
+    justify-content: flex-start;
+    padding-right: 50%;
+}
+
+.right-align {
+    justify-content: flex-end;
+    padding-left: 50%;
+}
+
+/* Összekötő pöttyök a folyón */
+.product-row::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 16px;
+    height: 16px;
+    background-color: white;
+    border: 3px solid var(--accent-color);
+    border-radius: 50%;
+    z-index: 5;
+    box-shadow: 0 0 0 4px rgba(255,255,255,0.8);
+}
+
+/* FOOTER */
+.main-footer {
+    background-color: var(--secondary-color);
+    color: white;
+    padding: 40px 0;
+    text-align: center;
+    margin-top: 50px;
+}
+
+/* --- RESPONSIVE / MOBIL NÉZET (Max 768px) --- */
+@media (max-width: 768px) {
+    .hamburger {
+        display: block;
+    }
+
+    /* Mobil Navigációs Menü */
+    .nav-links {
+        position: fixed;
+        top: 70px;
+        right: -100%; 
+        width: 100%;
+        height: calc(100dvh - 70px); /* dVH mobilra */
+        background: rgba(255, 255, 255, 0.98);
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        transition: right 0.4s cubic-bezier(0.77, 0, 0.175, 1);
+        box-shadow: -5px 0 15px rgba(0,0,0,0.05);
+        gap: 40px;
+    }
+
+    .nav-links.nav-active {
+        right: 0;
+    }
+
+    .nav-links li {
+        opacity: 0; 
+        transform: translateX(20px);
+    }
+    
+    .mobile-cta {
+        display: block;
+    }
+    .mobile-cta a {
+        background: #0096c7; /*Ez volt a régi: var(--primary-color)*/
+        color: white;
+        padding: 12px 30px;
+        border-radius: 25px;
+    }
+
+    /* Banner mobil */
+    .banner-carousel {
+        height: 65dvh; /* Kicsit rövidebb, mint 85dvh, jobb kompromisszum */
+        min-height: 400px; 
+    }
+    
+    .banner-slide {
+        /* A kép fókuszpontja legyen magasabban mobilon, ahol a lényeg van. 
+           Ezzel elkerülhető, hogy levágja a kép tetejét, ha az a fókusz. 
+           center 30% azt jelenti, hogy 30%-ra pozicionálja a kép felső szélét.
+           Ha az alján van a fókusz, a 'center bottom' a legjobb.
+        */
+        background-position: center bottom; 
+    }
+
+    /* River elrendezés mobilon */
+    .product-river-container {
+        padding: 40px 0;
+    }
+    .product-river, .product-row::before {
+        display: none;
+    }
+
+    .product-row {
+        margin: 30px 0;
+        padding: 0;
+        justify-content: center;
+    }
+
+    .left-align, .right-align {
+        padding: 0;
+    }
+
+    .product-card {
+        margin: 0 15px;
+        transform: translateY(30px) scale(0.98);
+    }
+}
+
+/* A JS által használt animáció keyframes-e */
+@keyframes navLinkFade {
+    from {
+        opacity: 0;
+        transform: translateX(50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
