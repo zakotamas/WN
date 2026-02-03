@@ -440,6 +440,106 @@ body {
     box-shadow: 0 0 0 4px rgba(255,255,255,0.8);
 }
 
+
+
+
+
+/*IFRAME jobs*/
+/* Wrapper: középre igazítás vízszintesen és függőlegesen */
+.gd-iframe-wrapper {
+  
+  display: grid;
+  place-items: center;
+  min-height: 100vh;            /* teljes képernyő középre igazításhoz */
+  padding: 1rem;                /* belső margó kisebb képernyőkön */
+  box-sizing: border-box;
+  background: #f7f7f7;          /* opcionális háttér a wrapperhez */
+}
+
+/* Iframe: rugalmas, arányt tartó, középre igazított */
+.gd-iframe-wrapper iframe {
+  width: 100%;
+  max-width: 880px;            /* szükség szerint módosítsd */
+  height: 100%;
+  aspect-ratio: 4 / 3;          /* Google Docs dokumentumokhoz gyakori arány; módosítható */
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+  background: #fff;
+  display: block;
+}
+
+/* Közepes képernyők (tablet) */
+@media (max-width: 900px) {
+  .gd-iframe-wrapper {
+    padding: 0.75rem;
+  }
+
+  .gd-iframe-wrapper iframe {
+    max-width: 900px;
+    aspect-ratio: 3 / 4; /* ha a dokumentum inkább álló, jobb arány */
+    box-shadow: 0 5px 14px rgba(0,0,0,0.07);
+  }
+}
+
+/* Mobil eszközök */
+@media (max-width: 600px) {
+  .gd-iframe-wrapper {
+    min-height: auto;      /* ne kényszerítse a teljes viewport magasságot */
+    padding: 0.5rem;
+  }
+
+  .gd-iframe-wrapper iframe {
+    width: 100%;
+    max-width: 100%;
+    aspect-ratio: auto;    /* kikapcsoljuk az aspect-ratio-t mobilon */
+    height: calc(100vh - 1rem); /* kitölti a képernyő nagy részét, marad hely a header/footer számára */
+    max-height: 90vh;      /* ne lépje túl a viewport-ot */
+    border-radius: 4px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+  }
+}
+
+/* Nagyon kis képernyők finomhangolása */
+@media (max-width: 420px) {
+  .gd-iframe-wrapper {
+    padding: 0.4rem;
+  }
+
+  .gd-iframe-wrapper iframe {
+    height: calc(100vh - 0.8rem);
+    font-size: 14px; /* ha a beágyazott tartalom örökli, segít olvashatóságon */
+  }
+}
+
+/* Biztosíték régebbi böngészők számára: ha nincs aspect-ratio támogatás */
+.gd-iframe-wrapper iframe {
+  /* Ha a böngésző nem támogatja az aspect-ratio-t, ez biztosít egy alap magasságot */
+  min-height: 480px;
+}
+
+/* Ha szeretnéd, hogy a wrapper mindig középen maradjon, de ne foglaljon teljes magasságot mobilon */
+@media (max-width: 600px) {
+  .gd-iframe-wrapper {
+    display: flex;
+    align-items: flex-start; /* mobilon inkább felülről induljon, ne középre függőlegesen */
+    justify-content: center;
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /* FOOTER */
 .main-footer {
     background-color: var(--secondary-color);
