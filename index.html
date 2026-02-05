@@ -37,10 +37,12 @@
             <div class="slide-bg" style="background-image: url('img/banner1.png');"></div>
             <div class="banner-overlay"></div>
             <div class="banner-content">
-                <!-- <span class="badge">Információ</span> -->
-                <h2>INVENTUR</h2>
-                <p>Unser Betrieb bleibt am Freitag, den 28. November 2025, aufgrund der Inventur geschlossen.</p>
-                <a href="termekek/csovek.html" class="cta-button">Mehr erfahren <i class="fas fa-arrow-right"></i></a>
+                <div class="text-panel">
+                    <!-- <span class="badge">Információ</span> -->
+                    <h2>INVENTUR</h2>
+                    <p>Unser Betrieb bleibt am Freitag, den 28. November 2025, aufgrund der Inventur geschlossen.</p>
+                    <a href="termekek/csovek.html" class="cta-button">Mehr erfahren <i class="fas fa-arrow-right"></i></a>
+                </div>
             </div>
         </div>
 
@@ -48,10 +50,12 @@
             <div class="slide-bg" style="background-image: url('img/banner2.png');"></div>
             <div class="banner-overlay"></div>
             <div class="banner-content">
-                <!-- <span class="badge">Hírek</span> -->
-                <h2>W&N wird Teil der <br>SCHMIDT'S Gruppe</h2>
-                <p>Eine starke Partnerschaft für die Zukunft.</p>
-                <a href="termekek/pumpak.html" class="cta-button">Mehr erfahren <i class="fas fa-arrow-right"></i></a>
+                <div class="text-panel">
+                    <!-- <span class="badge">Hírek</span> -->
+                    <h2>W&N wird Teil der <br>SCHMIDT'S Gruppe</h2>
+                    <p>Eine starke Partnerschaft für die Zukunft.</p>
+                    <a href="termekek/pumpak.html" class="cta-button">Mehr erfahren <i class="fas fa-arrow-right"></i></a>
+                </div>
             </div>
         </div>
 
@@ -59,10 +63,12 @@
             <div class="slide-bg" style="background-image: url('img/banner3.png');"></div>
             <div class="banner-overlay"></div>
             <div class="banner-content">
-                <!-- <span class="badge">Újdonság</span> -->
-                <h2>Katalog 2025</h2>
-                <p>Preisstand 1.1.2025 - Tekintse meg új kínálatunkat.</p>
-                <a href="termekek/beton.html" class="cta-button">Mehr erfahren <i class="fas fa-arrow-right"></i></a>
+                <div class="text-panel">
+                    <!-- <span class="badge">Újdonság</span> -->
+                    <h2>Katalog 2025</h2>
+                    <p>Preisstand 1.1.2025 - Tekintse meg új kínálatunkat.</p>
+                    <a href="termekek/beton.html" class="cta-button">Mehr erfahren <i class="fas fa-arrow-right"></i></a>
+                </div>
             </div>
         </div>
         
@@ -77,12 +83,22 @@
     </section>
 
     <main class="product-sections">
+
+        <!-- Moved the section-heading OUTSIDE the product-river-container so it cannot be overlapped
+             by the centered vertical river. This ensures the "Product" label and the separator
+             are visually separate from the river and card area. -->
+        <div class="section-heading" aria-hidden="false">
+            <div class="section-title">Product</div>
+            <div class="section-sep" aria-hidden="true"></div>
+        </div>
+
         <div class="product-river-container">
 
             <div class="product-river"></div>
 
             <div class="product-row left-align">
-                <div class="product-card reveal-effect">
+                <!-- 2. A "Schachtabdeckungen" kártya legyen azonnal látható: 'is-visible' osztály megtartva -->
+                <div class="product-card reveal-effect is-visible">
                     <div class="card-image">
                         <img src="img/product/kicsi1.png" alt="Ipari Csövek">
                     </div>

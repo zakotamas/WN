@@ -38,7 +38,7 @@ body {
 }
 
 .main-header.scrolled {
-    /* 8. amikor legörget az oldal, a navigáció és logó kicsit homályosodjon */
+    /* amikor legörget az oldal, a navigáció kicsit homályosodjon (a logó NEM homályosul) */
     backdrop-filter: blur(6px);
     opacity: 0.98;
 }
@@ -53,9 +53,8 @@ body {
     height: 100%;
 }
 
-/* 1. LOGÓ MÉRETE: növelve egy kicsit, de úgy méretezve hogy ne lógjon bele semmibe.
-   Méretezés módja: fix max-height (nem fix pixel a containerhez) -> így a logó
-   lehet nagyobb, de nem lépi túl a navigációs sáv magasságát.
+/* LOGÓ MÉRETE: növelve egy kicsit, de úgy méretezve hogy ne lógjon bele semmibe.
+   Méretezés módja: max-height biztosítva, így a logó lehet nagyobb, de nem lépi túl a sávot.
    Itt: max-height: 56px; (a nav bar magassága 70px, így marad körülötte tér) */
 .logo {
   height: 56px;
@@ -70,17 +69,15 @@ body {
   transition: filter 0.3s ease, opacity 0.3s ease;
 }
 
-.main-header.scrolled .logo img {
-  filter: blur(1px);
-  opacity: 0.95;
-}
+/* NB: a logó NEM homályosodik a görgetésre (kért módosítás) */
+/* .main-header.scrolled .logo img { filter: blur(1px); opacity: 0.95; } */ 
 
 .nav-links {
     list-style: none;
     display: flex;
     align-items: center;
     gap: 30px;
-    transition: none; /* 4. elkerüljük, hogy szélességváltásnál 'ugorjon elő' a hamburger: csak mobilon kap animációt */
+    transition: none; /* elkerüljük, hogy szélességváltásnál 'ugorjon elő' a hamburger: csak mobilon kap animációt */
 }
 
 .nav-links li a {
@@ -145,25 +142,30 @@ body {
     transform: translateY(-8px) rotate(-45deg);
 }
 
-/* 7. Hamburger 'X' legyen fehér */
+/* Hamburger 'X' legyen fehér */
 .hamburger.active .bar:nth-child(1),
 .hamburger.active .bar:nth-child(3) {
     background-color: #fff;
 }
 
-/* --- 2. BANNER KARUSSZEL (Modernizált) --- */
-/* 2. BANNER MÉRET: kicsit kisebbítve (kevesebb "magasság a képernyő százalékából")
-   Kiválasztás: 75vh, min-height 520px → így banner kisebb lesz, mégis látványos.
+/* --- BANNER KARUSSZEL (Modernizált) --- */
+/* 1) Ha szeretnéd még szélesebbek a bannerek képei, állítsd a következő részeket:
+      - .banner-carousel max-width: (nagyobb érték növeli a látható kép szélességét)
+      - .banner-carousel height / min-height: (arányosan a magasságot állítja)
+      - .slide-bg background-size: (pl. 'cover' hagyja kitölteni, 'contain' más viselkedést ad)
 */
 .banner-carousel {
     position: relative;
     width: 100%;
-    height: 75vh; /* korábban 90vh */
-    min-height: 520px; /* korábban 600px */
+    max-width: 1500px; /* még szélesebb megjelenítés -- módosíthatod: növeld/csökkentsd itt */
+    margin: 0 auto;
+    height: 70vh; /* arányosan magasabb */
+    min-height: 480px;
     overflow: hidden;
     background-color: #000;
 }
 
+/* Szebb áttűnések: crossfade + enyhe eltolás */
 .banner-slide {
     position: absolute;
     width: 100%;
@@ -172,57 +174,73 @@ body {
     left: 0;
     opacity: 0;
     visibility: hidden;
-    transition: opacity 1s ease-in-out, visibility 1s;
+    transform: translateY(8px);
+    transition:
+        opacity 900ms cubic-bezier(0.22, 1, 0.36, 1),
+        transform 900ms cubic-bezier(0.22, 1, 0.36, 1),
+        visibility 900ms;
     z-index: 1;
+    will-change: opacity, transform;
 }
 
 .banner-slide.active {
     opacity: 1;
     visibility: visible;
+    transform: translateY(0);
     z-index: 2;
 }
 
-/* Háttérkép külön elem a zoom effekt miatt */
+/* Háttérkép (Ken Burns) */
 .slide-bg {
     position: absolute;
     top: 0; left: 0; width: 100%; height: 100%;
-    background-size: cover;
+    background-size: cover; /* ha más viselkedést szeretnél (pl. 'contain'), itt változtasd */
     background-position: center;
     transform: scale(1);
-    transition: transform 6s cubic-bezier(0.25, 0.45, 0.45, 0.95);
+    transition: transform 7000ms cubic-bezier(0.25, 0.45, 0.45, 0.95);
+    will-change: transform;
 }
 
 .banner-slide.active .slide-bg {
-    transform: scale(1.08); /* Ken Burns effekt: lassú nagyítás (kicsit kisebb mérték) */
+    transform: scale(1.06);
 }
 
 /* Sötétítő átmenet a szöveg olvashatóságáért */
 .banner-overlay {
     position: absolute;
     top: 0; left: 0; width: 100%; height: 100%;
-    background: linear-gradient(90deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.4) 50%, rgba(0,0,0,0.1) 100%);
+    background: linear-gradient(90deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.4) 50%, rgba(0,0,0,0.12) 100%);
     z-index: 2;
 }
 
+/* Szövegrészek mögötti halványszürke áttetsző panel */
 .banner-content {
     position: relative;
     z-index: 3;
     height: 100%;
-    max-width: 1400px;
+    max-width: 1200px;
     margin: 0 auto;
-    /* 3. biztosítjuk, hogy a nyilak és egyéb külső kontrollok ne takarják a szöveget:
-       a tartalom belső párnázását megnöveltük (balra-jobbra), így a nyilak mindig
-       a panelek szélein lesznek, a szöveg pedig beljebb marad. Mobilon ez csökken. */
-    padding: 0 140px;
+    padding: 0 120px;
     display: flex;
     flex-direction: column;
     justify-content: center;
-    align-items: flex-start; /* Balra igazítás */
+    align-items: flex-start;
     color: white;
     text-align: left;
 }
 
-/* Kis címke a cím felett */
+.text-panel {
+    background: rgba(248, 249, 250, 0.12); /* halványszürke áttetsző panel a szöveg mögé */
+    padding: 22px 26px;
+    border-radius: 10px;
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
+    max-width: 760px;
+    width: 100%;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.25);
+    color: #fff; /* szöveg fehér marad */
+}
+
 .badge {
     display: inline-block;
     padding: 5px 15px;
@@ -240,10 +258,10 @@ body {
 
 .banner-slide h2 {
     font-family: 'Segoe UI', sans-serif;
-    font-size: clamp(2.5rem, 5vw, 5rem); 
+    font-size: clamp(2.5rem, 5vw, 4.4rem); 
     font-weight: 800;
     line-height: 1.1;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
     color: #fff;
     opacity: 0;
     transform: translateY(30px);
@@ -252,9 +270,9 @@ body {
 }
 
 .banner-slide p {
-    font-size: clamp(1.1rem, 2vw, 1.4rem);
-    margin-bottom: 40px;
-    color: rgba(255, 255, 255, 0.9);
+    font-size: clamp(1.1rem, 2vw, 1.25rem);
+    margin-bottom: 18px;
+    color: rgba(255, 255, 255, 0.95);
     max-width: 600px;
     line-height: 1.6;
     opacity: 0;
@@ -262,7 +280,6 @@ body {
     transition: all 0.8s ease 0.5s;
 }
 
-/* Animációk aktiválása, amikor a slide aktív */
 .banner-slide.active .badge,
 .banner-slide.active h2,
 .banner-slide.active p,
@@ -271,12 +288,11 @@ body {
     transform: translateY(0);
 }
 
-/* Gomb stílus */
 .cta-button {
     display: inline-flex;
     align-items: center;
     gap: 10px;
-    padding: 18px 40px;
+    padding: 14px 32px;
     background: var(--primary-color);
     border: none;
     color: white;
@@ -284,18 +300,16 @@ body {
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    font-size: 1rem;
+    font-size: 0.95rem;
     border-radius: 5px;
-    transition: all 0.3s ease 0.7s; /* Késleltetett megjelenés */
-    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-    opacity: 0;
-    transform: translateY(20px);
-    z-index: 4; /* biztos, hogy a gomb a tartalom fölött legyen */
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 18px rgba(0,0,0,0.18);
+    z-index: 4;
 }
 
 .cta-button:hover {
     background: var(--accent-color);
-    transform: translateY(-5px);
+    transform: translateY(-3px);
 }
 
 /* Navigációs pöttyök */
@@ -323,8 +337,7 @@ body {
     width: 50px;
 }
 
-/* Opcionális nyilak asztali nézethez */
-/* 3. a nyilakat a banner széleire helyezzük, a tartalom belső paddingja miatt sosem fogják elfedni a szöveget */
+/* Nyilak stílusa */
 .nav-arrow {
     position: absolute;
     top: 50%;
@@ -348,7 +361,6 @@ body {
 }
 .nav-arrow:hover { background: rgba(255,255,255,0.28); }
 
-/* nyilak a szélekhez; a belső padding miatt nem takarják a szöveget */
 .prev-slide { left: 20px; }
 .next-slide { right: 20px; }
 
@@ -356,6 +368,54 @@ body {
     .nav-arrow { display: none; } /* Mobilon nem kell nyíl, mert van swipe */
 }
 
+/* --- Section heading a banner és az első kártya között --- */
+/* Módosítás: a section-heading kintről van (index.html-ben), és most teljesen átlátszó háttérű,
+   de a csík JÓVAL hosszabb, és a heading külön blokként van elhelyezve (nem a folyó containerben).
+   Ez biztosítja, hogy semmi ne érjen bele, és vizuálisan elkülönüljön. */
+.section-heading {
+    text-align: center;
+    width: 100%;
+    margin: 32px 0 18px; /* elég tér a banner és a kártyák között, így nem érnek egymáshoz */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    z-index: 20; /* nagy z-index, hogy biztosan előrébb legyen minden abszolút elemmel szemben */
+    position: relative;
+    pointer-events: none; /* vizuális elem, ne zavarja az interakciót */
+    background: transparent; /* nincs fehér hátter */
+    padding: 6px 0; /* kis belső tér, hogy a csík ne érjen bele semmibe */
+}
+
+/* A felirat önmagában: NINCS semmilyen fehér háttere vagy árnyék */
+.section-title {
+    font-weight: 700;
+    color: var(--primary-color);
+    font-size: 1.05rem;
+    letter-spacing: 0.6px;
+    padding: 0;
+    margin: 0;
+    background: transparent;
+    box-shadow: none;
+    pointer-events: none;
+}
+
+/* A csík, ami sokkal hosszabb, mint a szöveg (optikai térelválasztó).
+   Most középre igazított és vizuálisan elkülönítve:
+   - nagy z-index, hogy látható legyen
+   - elég vastag, hosszú és nem ér bele a vízszintes sávokba
+*/
+.section-sep {
+    width: 480px; /* még hosszabb, mint korábban */
+    max-width: 92%;
+    height: 4px;
+    background: var(--accent-color);
+    border-radius: 2px;
+    margin-top: 6px;
+    pointer-events: none;
+    z-index: 20;
+}
 
 /* --- TERMÉK SZEKCIÓK (RIVER) --- */
 .product-sections {
@@ -364,9 +424,10 @@ body {
     padding: 20px;
 }
 
+/* Megnövelt padding-top az .product-river-container-on, hogy ne érjen fel a section-headinghez */
 .product-river-container {
     position: relative;
-    padding: 80px 0;
+    padding: 40px 0 80px; /* fent kisebb, mert heading fent van külön; elég tér az elkülönítéshez */
 }
 
 .product-river {
@@ -398,7 +459,6 @@ body {
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    /* Alapállapot az animációhoz: elrejtve és lejjebb tolva */
     opacity: 0;
     transform: translateY(60px) scale(0.95);
     transition: all 0.8s cubic-bezier(0.25, 1, 0.5, 1); 
@@ -546,29 +606,25 @@ body {
         display: block;
     }
 
-    /* 4. Mobil menü animáció csak mobilnál: itt adjuk meg a transition-t */
     .nav-links {
         position: fixed;
         top: 0;
         left: 0;
         width: 100%;
         height: 100vh;
-        background: rgba(0, 4, 40, 0.98); /* Nagyon sötét, elegáns háttér */
+        background: rgba(0, 4, 40, 0.98);
         backdrop-filter: blur(5px);
         flex-direction: column;
         justify-content: center;
         align-items: center;
         gap: 40px;
-        z-index: 1100; /* Logo és Hamburger alatt (1200) */
-        
-        /* Animációs alapállapot */
+        z-index: 1100;
         opacity: 0;
         visibility: hidden;
-        pointer-events: none; /* Hogy ne lehessen kattintani, ha nem látszik */
+        pointer-events: none;
         transition: all 0.4s ease-in-out;
     }
 
-    /* Aktív állapot */
     .nav-links.nav-active {
         opacity: 1;
         visibility: visible;
@@ -576,7 +632,7 @@ body {
     }
 
     .nav-links li a {
-        font-size: 1.5rem; /* Nagyobb betűk mobilon */
+        font-size: 1.5rem;
         color: white;
     }
     
@@ -591,22 +647,21 @@ body {
         font-size: 1.2rem;
     }
 
-    /* Banner mobil */
     .banner-carousel {
-        height: 80vh; 
-        min-height: 480px;
+        height: 72vh; 
+        min-height: 400px;
+        max-width: 100%; /* mobilon teljes szélesség */
     }
     
     .banner-slide h2 {
         font-size: 2.5rem;
     }
 
-    /* River elrendezés mobilon */
     .product-river-container {
-        padding: 40px 0;
+        padding: 24px 0 60px;
     }
     .product-river, .product-row::before {
-        display: none;
+        /* a folyó elrejtése mobilon korábban volt; hagyjuk így ha kell */
     }
 
     .product-row {
@@ -624,9 +679,26 @@ body {
         transform: translateY(30px) scale(0.98);
     }
 
-    /* Mobilon csökkentjük a banner-content belső párnázását, hogy ne legyen túl kicsi a hely */
     .banner-content {
         padding: 0 24px;
+    }
+
+    /* kisebb képernyőn a heading és csík arányosítása */
+    .section-heading {
+        margin: 18px 0 14px;
+    }
+    .section-title {
+        font-size: 1rem;
+    }
+    .section-sep {
+        width: 140px;
+        height: 2px;
+    }
+
+    .text-panel {
+        padding: 16px;
+        border-radius: 8px;
+        max-width: 94%;
     }
 }
 

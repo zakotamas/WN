@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // --- 8. Scrolled hatás a navigációra és logóra ---
+    // --- Scrolled hatás a navigációra (a logót NEM homályosítjuk) ---
     function handleScrollHeader() {
         if (window.scrollY > 10) {
             mainHeader.classList.add('scrolled');
@@ -52,7 +52,7 @@ document.addEventListener('DOMContentLoaded', function() {
     window.addEventListener('scroll', handleScrollHeader);
 
 
-    // --- 2. Banner Karusszel & SWIPE (Fix: "sodrás") ---
+    // --- Banner Karusszel & SWIPE ---
     const slides = document.querySelectorAll('.banner-slide');
     const dots = document.querySelectorAll('.dot');
     const bannerContainer = document.querySelector('.banner-carousel');
@@ -61,39 +61,121 @@ document.addEventListener('DOMContentLoaded', function() {
     
     let currentSlide = 0;
     let slideInterval;
+    let isAnimating = false;
 
     function showSlide(index) {
-        // Körkörös léptetés
-        if (index >= slides.length) currentSlide = 0;
-        else if (index < 0) currentSlide = slides.length - 1;
-        else currentSlide = index;
+        // Körkörös léptetés (instant class-based)
+        if (index >= slides.length) index = 0;
+        else if (index < 0) index = slides.length - 1;
 
         slides.forEach(slide => {
             slide.classList.remove('active');
-            // reset any transform applied by drag
-            const bg = slide.querySelector('.slide-bg');
-            if (bg) {
-                bg.style.transition = '';
-                bg.style.transform = '';
-            }
+            // reset inline styles if any
+            slide.style.transition = '';
+            slide.style.transform = '';
+            slide.style.opacity = '';
+            slide.style.zIndex = '';
+            slide.style.visibility = '';
         });
         dots.forEach(dot => dot.classList.remove('active'));
         
-        slides[currentSlide].classList.add('active');
-        dots[currentSlide].classList.add('active');
+        slides[index].classList.add('active');
+        dots[index].classList.add('active');
+        currentSlide = index;
+    }
+
+    // New: perform smooth directional transition between slides (used for drag + controls)
+    function performSlideTransition(targetIndex, direction) {
+        if (isAnimating) return;
+        if (targetIndex >= slides.length) targetIndex = 0;
+        if (targetIndex < 0) targetIndex = slides.length - 1;
+        if (targetIndex === currentSlide) return;
+
+        isAnimating = true;
+        clearInterval(slideInterval);
+
+        const outgoing = slides[currentSlide];
+        const incoming = slides[targetIndex];
+
+        // Prepare incoming: position it offscreen in the direction (direction: 1 => incoming starts at +100% (right))
+        incoming.style.transition = 'none';
+        incoming.style.transform = `translateX(${direction * 100}%)`;
+        incoming.style.opacity = '1';
+        incoming.style.visibility = 'visible';
+        incoming.style.zIndex = '3';
+        incoming.classList.add('active'); // make it visible for the transition
+
+        outgoing.style.zIndex = '2';
+
+        // Force reflow to apply initial position
+        void incoming.offsetWidth;
+
+        // Define transition
+        const transitionVal = 'transform 480ms cubic-bezier(0.22, 1, 0.36, 1), opacity 480ms cubic-bezier(0.22, 1, 0.36, 1)';
+        incoming.style.transition = transitionVal;
+        outgoing.style.transition = transitionVal;
+
+        // Animate: incoming to 0, outgoing move opposite direction and fade
+        incoming.style.transform = 'translateX(0)';
+        outgoing.style.transform = `translateX(${-direction * 100}%)`;
+        outgoing.style.opacity = '0';
+
+        // After transition ends, cleanup and set state
+        const cleanup = () => {
+            // remove active from outgoing
+            outgoing.classList.remove('active');
+
+            // clear inline styles
+            outgoing.style.transition = '';
+            outgoing.style.transform = '';
+            outgoing.style.opacity = '';
+            outgoing.style.zIndex = '';
+            outgoing.style.visibility = '';
+
+            incoming.style.transition = '';
+            incoming.style.transform = '';
+            incoming.style.opacity = '';
+            incoming.style.zIndex = '';
+            incoming.style.visibility = '';
+
+            // update dots
+            dots.forEach(d => d.classList.remove('active'));
+            if (dots[targetIndex]) dots[targetIndex].classList.add('active');
+
+            currentSlide = targetIndex;
+            isAnimating = false;
+            resetAutoSlide();
+        };
+
+        // Use timeout as fallback in case transitionend doesn't fire for some reason
+        const cleanupTimeout = setTimeout(() => {
+            cleanup();
+        }, 520);
+
+        // Also listen for transitionend on incoming
+        const onTransitionEnd = (e) => {
+            if (e.target === incoming) {
+                clearTimeout(cleanupTimeout);
+                incoming.removeEventListener('transitionend', onTransitionEnd);
+                cleanup();
+            }
+        };
+        incoming.addEventListener('transitionend', onTransitionEnd);
     }
 
     function nextSlide() {
-        showSlide(currentSlide + 1);
+        performSlideTransition((currentSlide + 1) % slides.length, 1);
     }
     
     function prevSlideFunc() {
-        showSlide(currentSlide - 1);
+        performSlideTransition((currentSlide - 1 + slides.length) % slides.length, -1);
     }
 
     // Automatikus léptetés
     function startAutoSlide() {
-        slideInterval = setInterval(nextSlide, 6000);
+        slideInterval = setInterval(() => {
+            if (!isAnimating) nextSlide();
+        }, 6000);
     }
     
     function resetAutoSlide() {
@@ -101,12 +183,13 @@ document.addEventListener('DOMContentLoaded', function() {
         startAutoSlide();
     }
 
-    // Pöttyök eseménykezelése
+    // Pöttyök eseménykezelése (most animált iránnyal)
     dots.forEach(dot => {
         dot.addEventListener('click', function() {
             const slideIndex = parseInt(this.getAttribute('data-slide')) - 1;
-            showSlide(slideIndex);
-            resetAutoSlide();
+            if (slideIndex === currentSlide) return;
+            const direction = slideIndex > currentSlide ? 1 : -1;
+            performSlideTransition(slideIndex, direction);
         });
     });
 
@@ -117,7 +200,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Indítás
     startAutoSlide();
 
-    // --- 6. Drag / Swipe logika (egérrel fogható és vizuálisan is "sodorható") ---
+    // --- Drag / Swipe logika (egérrel fogható és vizuálisan is "sodorható") ---
     let isDragging = false;
     let dragStartX = 0;
     let dragCurrentX = 0;
@@ -125,7 +208,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const dragThreshold = 60; // px, meg kell haladni a váltáshoz
 
     // Cursor alapállapot
-    bannerContainer.style.cursor = 'grab';
+    if (bannerContainer) bannerContainer.style.cursor = 'grab';
 
     function unifyEventX(e) {
         if (e.type.startsWith('mouse')) return e.clientX;
@@ -135,81 +218,93 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function onDragStart(e) {
-        // csak fő slide-ot engedjük
+        if (isAnimating) return;
         isDragging = true;
         dragStartX = unifyEventX(e);
         dragCurrentX = dragStartX;
         dragDelta = 0;
-        // megszakítjuk az automatikus váltást
-        resetAutoSlide();
-        bannerContainer.style.cursor = 'grabbing';
+        // megszakítjuk az automatikus váltást (leállítjuk)
+        clearInterval(slideInterval);
+        if (bannerContainer) bannerContainer.style.cursor = 'grabbing';
 
-        // levesszük átmenetet az aktív slide bg-jéről, hogy simán követhesse a kurzort
+        // megakadályozzuk hogy a browser drag-olja az image-t
+        e.preventDefault();
+
+        // remove transitions on active bg for smooth following
         const activeBg = slides[currentSlide].querySelector('.slide-bg');
         if (activeBg) {
             activeBg.style.transition = 'none';
         }
-
-        // megakadályozzuk hogy a browser drag-olja az image-t
-        e.preventDefault();
     }
 
     function onDragMove(e) {
-        if (!isDragging) return;
+        if (!isDragging || isAnimating) return;
         dragCurrentX = unifyEventX(e);
         dragDelta = dragCurrentX - dragStartX;
 
-        // vizuális elmozdítás: a slide háttérje követi az egeret (kis arányban),
-        // hogy "sodorás" érzést adjon anélkül, hogy a teljes DOM-ot mozgatnánk.
+        // vizuális elmozdítás: a slide háttérje követi az egeret (kis arányban)
         const activeBg = slides[currentSlide].querySelector('.slide-bg');
         if (activeBg) {
-            // kisebb eltolás + enyhe skálázás a dinamikához
             const translateX = dragDelta * 0.35; // csökkentjük az eltolás mértékét
             const scale = 1.02;
             activeBg.style.transform = `translateX(${translateX}px) scale(${scale})`;
         }
+
+        // Also subtly move the whole active slide to hint direction (small)
+        const activeSlide = slides[currentSlide];
+        if (activeSlide) {
+            activeSlide.style.transition = 'none';
+            activeSlide.style.transform = `translateX(${dragDelta * 0.15}px)`; // small movement
+        }
     }
 
     function onDragEnd(e) {
-        if (!isDragging) return;
+        if (!isDragging || isAnimating) return;
         isDragging = false;
-        bannerContainer.style.cursor = 'grab';
+        if (bannerContainer) bannerContainer.style.cursor = 'grab';
 
-        // visszaállítás vizuálisan
+        // reset visual transforms
         const activeBg = slides[currentSlide].querySelector('.slide-bg');
         if (activeBg) {
-            // visszaálló animáció
             activeBg.style.transition = 'transform 400ms cubic-bezier(0.22, 1, 0.36, 1)';
             activeBg.style.transform = '';
         }
+        const activeSlide = slides[currentSlide];
+        if (activeSlide) {
+            activeSlide.style.transition = 'transform 420ms cubic-bezier(0.22, 1, 0.36, 1)';
+            activeSlide.style.transform = '';
+        }
 
-        // ha az elmozdulás meghaladja a threshold-ot, váltunk
+        // Determine action
         if (dragDelta < -dragThreshold) {
-            // user balra húzott: következő slide
-            nextSlide();
+            // balra húzás => következő (incoming from right)
+            performSlideTransition((currentSlide + 1) % slides.length, 1);
         } else if (dragDelta > dragThreshold) {
-            // user jobbra húzott: előző slide
-            prevSlideFunc();
+            // jobbra húzás => előző (incoming from left)
+            performSlideTransition((currentSlide - 1 + slides.length) % slides.length, -1);
         } else {
             // kevés mozgás: maradunk a jelenlegi slide-on
             showSlide(currentSlide);
+            resetAutoSlide();
         }
 
-        // újraindítjuk az automatikát (kis késéssel, hogy ne zavaró legyen)
-        setTimeout(resetAutoSlide, 250);
+        // reset deltas
+        dragDelta = 0;
     }
 
     // Touch események (Mobil)
-    bannerContainer.addEventListener('touchstart', onDragStart, {passive: false});
-    bannerContainer.addEventListener('touchmove', onDragMove, {passive: false});
-    bannerContainer.addEventListener('touchend', onDragEnd);
+    if (bannerContainer) {
+        bannerContainer.addEventListener('touchstart', onDragStart, {passive: false});
+        bannerContainer.addEventListener('touchmove', onDragMove, {passive: false});
+        bannerContainer.addEventListener('touchend', onDragEnd);
 
-    // Egér események (Desktop)
-    bannerContainer.addEventListener('mousedown', onDragStart);
-    window.addEventListener('mousemove', onDragMove);
-    window.addEventListener('mouseup', onDragEnd);
+        // Egér események (Desktop)
+        bannerContainer.addEventListener('mousedown', onDragStart);
+        window.addEventListener('mousemove', onDragMove);
+        window.addEventListener('mouseup', onDragEnd);
+    }
 
-    // --- 3. Scroll Reveal Animáció ---
+    // --- Scroll Reveal Animáció ---
     const revealCards = document.querySelectorAll('.reveal-effect');
     const river = document.querySelector('.product-river');
 
@@ -233,7 +328,7 @@ document.addEventListener('DOMContentLoaded', function() {
         revealOnScroll.observe(card);
     });
 
-    // --- 4. Folyó csík kitöltése görgetésre ---
+    // --- Folyó csík kitöltése görgetésre ---
     window.addEventListener('scroll', () => {
         if (!river) return;
         
