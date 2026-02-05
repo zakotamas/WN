@@ -9,20 +9,20 @@
 </head>
 <body>
 
-    <header class="main-header">
+    <header class="main-header" id="mainHeader">
         <nav class="navbar">
             <div class="logo">
-                <img src="img/logo/logown.png" alt="WallnerNeubert">
+                <a href="index.html"><img src="img/logo/logown.png" alt="WallnerNeubert"></a>
             </div>
             
-            <div class="hamburger">
+            <div class="hamburger" id="hamburger">
                 <span class="bar"></span>
                 <span class="bar"></span>
                 <span class="bar"></span>
             </div>
 
             <ul class="nav-links">
-                <li><a href="#">Home</a></li>
+                <li><a href="index.html">Home</a></li>
                 <li><a href="#">Referenzen</a></li>
                 <li><a href="#">Produkte</a></li>
                 <li><a href="#">Downloads</a></li>
@@ -32,35 +32,49 @@
         </nav>
     </header>
 
-    <section class="banner-carousel">
-    <div class="banner-slide active" data-id="1" style="background-image: url('img/banner1.png');">
-        <div class="banner-content">
-            <h2>INVENTUR</h2>
-            <p>Unser Betrieb bleibt am Freitag, den 28. November 2025, aufgrund der Inventur geschlossen.</p>
-            <a href="termekek/csovek.html" class="cta-button">Mehr erfahren</a>
+    <section class="banner-carousel" id="heroBanner">
+        <div class="banner-slide active" data-id="1">
+            <div class="slide-bg" style="background-image: url('img/banner1.png');"></div>
+            <div class="banner-overlay"></div>
+            <div class="banner-content">
+                <!-- <span class="badge">Információ</span> -->
+                <h2>INVENTUR</h2>
+                <p>Unser Betrieb bleibt am Freitag, den 28. November 2025, aufgrund der Inventur geschlossen.</p>
+                <a href="termekek/csovek.html" class="cta-button">Mehr erfahren <i class="fas fa-arrow-right"></i></a>
+            </div>
         </div>
-    </div>
-    <div class="banner-slide" data-id="2" style="background-image: url('img/banner2.png');">
-        <div class="banner-content">
-            <h2>W&N wird Teil der SCHMIDT'S Gruppe</h2>
-            <p>Eine starke Partnerschaft für die Zukunft</p>
-            <a href="termekek/pumpak.html" class="cta-button">Mehr erfahren</a>
+
+        <div class="banner-slide" data-id="2">
+            <div class="slide-bg" style="background-image: url('img/banner2.png');"></div>
+            <div class="banner-overlay"></div>
+            <div class="banner-content">
+                <!-- <span class="badge">Hírek</span> -->
+                <h2>W&N wird Teil der <br>SCHMIDT'S Gruppe</h2>
+                <p>Eine starke Partnerschaft für die Zukunft.</p>
+                <a href="termekek/pumpak.html" class="cta-button">Mehr erfahren <i class="fas fa-arrow-right"></i></a>
+            </div>
         </div>
-    </div>
-    <div class="banner-slide" data-id="3" style="background-image: url('img/banner3.png');">
-        <div class="banner-content">
-            <h2>Katalog 2025</h2>
-            <p>Preisstand 1.1.2025</p>
-            <a href="termekek/beton.html" class="cta-button">Mehr erfahren</a>
+
+        <div class="banner-slide" data-id="3">
+            <div class="slide-bg" style="background-image: url('img/banner3.png');"></div>
+            <div class="banner-overlay"></div>
+            <div class="banner-content">
+                <!-- <span class="badge">Újdonság</span> -->
+                <h2>Katalog 2025</h2>
+                <p>Preisstand 1.1.2025 - Tekintse meg új kínálatunkat.</p>
+                <a href="termekek/beton.html" class="cta-button">Mehr erfahren <i class="fas fa-arrow-right"></i></a>
+            </div>
         </div>
-    </div>
-    
-    <div class="carousel-indicators">
-        <span class="dot active" data-slide="1"></span>
-        <span class="dot" data-slide="2"></span>
-        <span class="dot" data-slide="3"></span>
-    </div>
-</section>
+        
+        <div class="carousel-indicators">
+            <span class="dot active" data-slide="1"></span>
+            <span class="dot" data-slide="2"></span>
+            <span class="dot" data-slide="3"></span>
+        </div>
+        
+        <div class="nav-arrow prev-slide" data-action="prev" aria-hidden="true"><i class="fas fa-chevron-left"></i></div>
+        <div class="nav-arrow next-slide" data-action="next" aria-hidden="true"><i class="fas fa-chevron-right"></i></div>
+    </section>
 
     <main class="product-sections">
         <div class="product-river-container">
